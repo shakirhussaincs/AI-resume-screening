@@ -6,3 +6,5 @@ __pycache__/
 Dataset/*.jsonl
 Dataset/*.csv
 .ipynb_checkpoints/
+.venv/
+.vscode/
