@@ -1,9 +1,7 @@
-Dataset/
-MODEL/*.pkl
+
 .env
 __pycache__/
 .ipynb_checkpoints/
-Dataset/*.jsonl
 Dataset/*.csv
 .ipynb_checkpoints/
 .venv/
