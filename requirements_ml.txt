@@ -7,3 +7,6 @@ seaborn
 joblib
 google-generativeai
 python-dotenv
+pdfplumber
+PyPDF2
+python-dotenv

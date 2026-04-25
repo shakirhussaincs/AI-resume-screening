@@ -1,0 +1,12 @@
+
+    JOHN DOE
+    Python Developer
+    
+    Experience:
+    - 5 years of Python development
+    - 3 years of Machine Learning
+    - SQL and database management
+    
+    Education:
+    Bachelor of Computer Science
+    
