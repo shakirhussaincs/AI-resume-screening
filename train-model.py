@@ -40,15 +40,15 @@ print(f"✅ TF-IDF Vectorizer saved (Features: {X.shape[1]}).")
 
 # --- 5. FEATURE SELECTION (The Noise Filter) ---
 # We use the NUMERIC 'y' here to avoid the error you found earlier
-selector = SelectKBest(chi2, k=10000)
+selector = SelectKBest(chi2, k=5000)
 X_selected = selector.fit_transform(X, y) 
 joblib.dump(selector, os.path.join(export_dir, 'feature_selector.pkl'))
-print(f"✅ Feature Selector saved (Reduced to 10,000 features).")
+print(f"✅ Feature Selector saved (Reduced to 5000 features).")
 
 # --- 6. FINAL MODEL TRAINING ---
 print("Training the Final Production Random Forest...")
 final_rf = RandomForestClassifier(
-    n_estimators=100, 
+    n_estimators=200, 
     class_weight='balanced', 
     n_jobs=-1, 
     random_state=42
