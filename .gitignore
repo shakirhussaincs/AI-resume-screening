@@ -7,3 +7,11 @@ env/
 venv/
 *.pdf
 temp_resume.txt
+
+.env
+__pycache__/
+.ipynb_checkpoints/
+Dataset/*.csv
+.ipynb_checkpoints/
+.venv/
+.vscode/
