@@ -1,9 +1,15 @@
 import importlib
 import importlib.util
 from io import BytesIO
+import re
 import os
-# Import the unified cleaning function from preprocessing
-from preprocessing import clean_resume_text
+# Importing the cleaning logic from the teammate's preprocessing file
+try:
+    from preprocessing import clean_resume_text
+except ImportError:
+    # Fallback to local logic if the file is missing or broken
+    def clean_resume_text(text):
+        return str(text).lower().strip()
 
 # Safe import of PDF libraries
 PyPDF2 = importlib.import_module("PyPDF2") if importlib.util.find_spec("PyPDF2") else None
@@ -11,7 +17,7 @@ pdfplumber = importlib.import_module("pdfplumber") if importlib.util.find_spec("
 
 def extract_text(pdf_input):
     """
-    Unified entry point. Uses the shared cleaning logic from preprocessing.py.
+    Unified entry point for PDF extraction.
     """
     if isinstance(pdf_input, list):
         extracted_bundle = {}
@@ -51,18 +57,12 @@ def _extract_core(pdf_handle):
             text = "\n".join([p.extract_text() for p in reader.pages if p.extract_text()])
         except Exception: pass
         
-    # Using the shared clean_resume_text from preprocessing.py
+    # Using the teammate's cleaning logic
     return clean_resume_text(text)
 
 if __name__ == "__main__":
-    print("\n" + "="*60)
-    print(" SYNCED PDF EXTRACTION TEST ")
-    print("="*60)
+    print("Testing PDF Parser with Preprocessing Import...")
     pdfs = [f for f in os.listdir('.') if f.lower().endswith('.pdf')]
     if pdfs:
         results = extract_text(pdfs)
-        for name, content in results.items():
-            print(f"[ {name} ] -> {len(content)} chars (Cleaned via preprocessing.py)")
-    else:
-        print("No PDFs found.")
-    print("\n" + "="*60)
+        print(f"Successfully processed {len(results)} files.")
