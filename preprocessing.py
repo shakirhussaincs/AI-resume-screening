@@ -46,10 +46,9 @@ def clean_resume_text(text):
     # Step 7: Tokenize and remove stopwords
     stop_words = set(stopwords.words('english'))
     words = text.split()
-    words = [w for w in words if w not in stop_words and len(w) > 2]
+    words = [w for w in words if w not in stop_words and len(w) > 1]
     
     # Step 8: Lemmatization
     lemmatizer = WordNetLemmatizer()
-    words = [lemmatizer.lemmatize(w) for w in words]
-    
+    words = [lemmatizer.lemmatize(w) if len(w) > 3 else w for w in words]
     return " ".join(words)

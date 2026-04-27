@@ -58,7 +58,10 @@ def _extract_core(pdf_handle):
         except Exception: pass
         
     # Using the teammate's cleaning logic
-    return clean_resume_text(text)
+    return {
+        "raw": text,
+        "clean": clean_resume_text(text)
+    }
 
 if __name__ == "__main__":
     print("Testing PDF Parser with Preprocessing Import...")

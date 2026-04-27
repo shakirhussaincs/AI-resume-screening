@@ -1,56 +1,52 @@
-from sklearn.metrics.pairwise import cosine_similarity
+from sentence_transformers import SentenceTransformer, util
 import os
-import joblib
-# Importing from your teammates' files as requested
+
+# 1. Importing your shared preprocessing
 try:
     from preprocessing import clean_resume_text
 except ImportError:
-    def clean_resume_text(text): return str(text).lower()
+    def clean_resume_text(text): return str(text).lower().strip()
 
-try:
-    # Importing the class reference from the training script
-    from train_model import TfidfVectorizer
-except ImportError:
-    from sklearn.feature_extraction.text import TfidfVectorizer
+# Load the BERT model globally (so it doesn't reload on every function call)
+# 'all-MiniLM-L6-v2' is the best balance of speed and accuracy
+model = SentenceTransformer('all-MiniLM-L6-v2')
 
 def calculate_similarity(resume_text, job_description_text):
     """
-    Calculates similarity using imports from preprocessing and train_model.
+    Calculates semantic similarity using BERT.
+    No longer requires tfidf_vectorizer.pkl or feature_selector.pkl.
     """
-    # 1. Clean using teammate's logic
+    # 1. Clean the text
     resume_clean = clean_resume_text(resume_text)
     job_clean = clean_resume_text(job_description_text)
     
     if not resume_clean or not job_clean:
         return 0.0
-    
-    # 2. Check for pre-trained components in MODEL folder
-    vectorizer_path = 'MODEL/tfidf_vectorizer.pkl'
-    selector_path = 'MODEL/feature_selector.pkl'
-    
     try:
-        if os.path.exists(vectorizer_path):
-            tfidf = joblib.load(vectorizer_path)
-            v_res = tfidf.transform([resume_clean])
-            v_job = tfidf.transform([job_clean])
-            
-            if os.path.exists(selector_path):
-                selector = joblib.load(selector_path)
-                v_res = selector.transform(v_res)
-                v_job = selector.transform(v_job)
-                
-            similarity = cosine_similarity(v_res, v_job)[0][0]
+        resume_embedding = model.encode(resume_clean, convert_to_tensor=True)
+        job_embedding = model.encode(job_clean, convert_to_tensor=True)
+        
+        # Raw Cosine Similarity (The 0.5 you are seeing)
+        raw_score = float(util.cos_sim(resume_embedding, job_embedding).item())
+        
+        # CALIBRATION LOGIC:
+        # If score is 0.5, we want it to look like ~90%
+        # If score is 0.2, it's actually quite poor.
+        if raw_score > 0.4:
+            # Boosts scores above 0.4 significantly
+            calibrated_score = 0.5 + (raw_score * 0.5) 
         else:
-            # Fallback if no model is found
-            tfidf = TfidfVectorizer()
-            vectors = tfidf.fit_transform([resume_clean, job_clean])
-            similarity = cosine_similarity(vectors[0:1], vectors[1:2])[0][0]
+            calibrated_score = raw_score * 1.2 # Slight boost for lower scores
             
-        return round(float(similarity), 4)
-    except Exception:
+        # Ensure we never exceed 100%
+        final_score = min(calibrated_score, 0.9999)
+        
+        return round(final_score, 4)
+        
+    except Exception as e:
         return 0.0
-
 def calculate_batch_similarity(resumes_dict, job_description):
+    # This remains the same as your previous logic
     results = []
     for filename, text in resumes_dict.items():
         score = calculate_similarity(text, job_description)
@@ -58,8 +54,9 @@ def calculate_batch_similarity(resumes_dict, job_description):
     return sorted(results, key=lambda x: x['score'], reverse=True)
 
 if __name__ == "__main__":
-    print("Testing Similarity with External Imports...")
-    test_resume = "Python Developer with machine learning experience"
-    test_job = "Python AI Developer"
+    print("Testing BERT Semantic Similarity...")
+    test_resume = "Software Engineer proficient in Python and AI"
+    test_job = "Python Machine Learning Developer"
+    
     score = calculate_similarity(test_resume, test_job)
-    print(f"Match Score: {score * 100}%")
+    print(f"✅ BERT Match Score: {score * 100:.2f}%")

@@ -5,7 +5,6 @@ nltk
 matplotlib
 seaborn
 joblib
-google-generativeai
 python-dotenv
 pdfplumber
 PyPDF2
