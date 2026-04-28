@@ -766,7 +766,7 @@ if st.session_state.processed:
                 return ""
 
             styled = (display_df.style
-                      .applymap(color_status, subset=["Status"])
+                      .map(color_status, subset=["Status"])
                       .background_gradient(subset=["Match Score %"], cmap="Purples", vmin=0, vmax=100)
                       .format({"Match Score %": "{:.1f}%"}))
             st.dataframe(styled, use_container_width=True, height=380)
