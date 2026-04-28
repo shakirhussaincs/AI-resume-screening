@@ -614,7 +614,7 @@ with tab_eval:
         return ""
 
     styled_eval = eval_df.style.map(highlight_model, subset=["Model"])
-    st.dataframe(styled_eval, use_container_width=True, hide_index=True)
+    st.dataframe(styled_eval, width="stretch", hide_index=True)
 
     # ── Winner badge ──
     st.markdown("---")
