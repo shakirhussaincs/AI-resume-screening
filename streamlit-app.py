@@ -613,7 +613,7 @@ with tab_eval:
         if val == "Random Forest": return "color:#10b981;font-weight:600"
         return ""
 
-    styled_eval = eval_df.style.applymap(highlight_model, subset=["Model"])
+    styled_eval = eval_df.style.map(highlight_model, subset=["Model"])
     st.dataframe(styled_eval, use_container_width=True, hide_index=True)
 
     # ── Winner badge ──
