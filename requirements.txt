@@ -9,3 +9,5 @@ joblib
 python-dotenv
 pdfplumber
 PyPDF2
+sentence-transformers
+torch
